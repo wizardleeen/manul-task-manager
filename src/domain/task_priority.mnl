@@ -1,0 +1,8 @@
+package domain
+
+enum TaskPriority {
+    LOW,
+    MEDIUM,
+    HIGH
+;
+}

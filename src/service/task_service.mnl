@@ -1,0 +1,96 @@
+package service
+
+import domain.Task
+import domain.TaskStatus
+import domain.TaskPriority
+
+@Bean
+class TaskService {
+    // Create a new task
+    fn createTask(title: string, description: string, priority: TaskPriority) -> Task {
+        require(title.length > 0, "标题不能为空")
+        return Task(title, description, TaskStatus.TODO, priority)
+    }
+
+    // Get all tasks
+    fn getAllTasks() -> Task[] {
+        return Task.createdAtIdx.getAll(true)
+    }
+
+    // Get tasks by status
+    fn getTasksByStatus(status: TaskStatus) -> Task[] {
+        return Task.statusIdx.getAll(status)
+    }
+
+    // Get tasks by priority
+    fn getTasksByPriority(priority: TaskPriority) -> Task[] {
+        return Task.priorityIdx.getAll(priority)
+    }
+
+    // Get pending tasks (TODO or IN_PROGRESS)
+    fn getPendingTasks() -> Task[] {
+        val todoTasks = Task.statusIdx.getAll(TaskStatus.TODO)
+        val inProgressTasks = Task.statusIdx.getAll(TaskStatus.IN_PROGRESS)
+        val all = todoTasks.concat(inProgressTasks)
+        all.sort((t1, t2) -> {
+            // Sort by priority (HIGH > MEDIUM > LOW) then by createdAt
+            val priorityOrder = [TaskPriority.LOW, TaskPriority.MEDIUM, TaskPriority.HIGH]
+            val p1 = priorityOrder.indexOf(t1.priority)
+            val p2 = priorityOrder.indexOf(t2.priority)
+            if (p1 != p2) return p1 > p2 ? -1 : 1
+            return t1.createdAt < t2.createdAt ? -1 : t1.createdAt == t2.createdAt ? 0 : 1
+        })
+        return all
+    }
+
+    // Get completed tasks
+    fn getCompletedTasks() -> Task[] {
+        return Task.statusIdx.getAll(TaskStatus.DONE)
+    }
+
+    // Start working on a task
+    fn startTask(task: Task) {
+        task.markInProgress()
+    }
+
+    // Complete a task
+    fn completeTask(task: Task) {
+        task.markDone()
+    }
+
+    // Reopen a task
+    fn reopenTask(task: Task) {
+        task.markTodo()
+    }
+
+    // Update task details
+    fn updateTask(task: Task, title: string, description: string, priority: TaskPriority) {
+        task.updateTitle(title)
+        task.updateDescription(description)
+        task.updatePriority(priority)
+    }
+
+    // Delete a task
+    fn deleteTask(task: Task) {
+        delete task
+    }
+
+    // Delete all completed tasks
+    fn deleteCompletedTasks() {
+        val completed = Task.statusIdx.getAll(TaskStatus.DONE)
+        completed.forEach(t -> delete t)
+    }
+
+    // Get task count by status
+    fn getTaskCount() -> map[string, int] {
+        val todoCount = Task.statusIdx.getAll(TaskStatus.TODO).length
+        val inProgressCount = Task.statusIdx.getAll(TaskStatus.IN_PROGRESS).length
+        val doneCount = Task.statusIdx.getAll(TaskStatus.DONE).length
+        return {
+            "todo": todoCount,
+            "inProgress": inProgressCount,
+            "done": doneCount,
+            "total": todoCount + inProgressCount + doneCount
+        }
+    }
+}

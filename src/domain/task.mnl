@@ -1,0 +1,45 @@
+package domain
+
+import domain.TaskStatus
+import domain.TaskPriority
+
+class Task(
+    @Summary
+    var title: string,
+    var description: string,
+    var status: TaskStatus,
+    var priority: TaskPriority
+) {
+    val createdAt = now()
+    var completedAt: long? = null
+
+    static val statusIdx = Index<TaskStatus, Task>(false, t -> t.status)
+    static val priorityIdx = Index<TaskPriority, Task>(false, t -> t.priority)
+    static val createdAtIdx = Index<long, Task>(false, t -> t.createdAt)
+
+    fn markInProgress() {
+        status = TaskStatus.IN_PROGRESS
+    }
+
+    fn markDone() {
+        status = TaskStatus.DONE
+        completedAt = now()
+    }
+
+    fn markTodo() {
+        status = TaskStatus.TODO
+        completedAt = null
+    }
+
+    fn updateTitle(newTitle: string) {
+        title = newTitle
+    }
+
+    fn updateDescription(newDesc: string) {
+        description = newDesc
+    }
+
+    fn updatePriority(newPriority: TaskPriority) {
+        priority = newPriority
+    }
+}

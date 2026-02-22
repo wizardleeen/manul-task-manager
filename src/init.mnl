@@ -1,0 +1,14 @@
+package domain
+
+import domain.Task
+import domain.TaskStatus
+import domain.TaskPriority
+
+@Bean
+class Init {
+    {
+        Task("欢迎使用任务管理器", "这是您的第一个任务！", TaskStatus.TODO, TaskPriority.HIGH)
+        Task("创建更多任务", "点击按钮添加新任务", TaskStatus.IN_PROGRESS, TaskPriority.MEDIUM)
+        Task("完成一项任务", "点击任务右侧按钮标记完成", TaskStatus.DONE, TaskPriority.LOW)
+    }
+}
