@@ -3,6 +3,7 @@ package service
 import domain.Task
 import domain.TaskStatus
 import domain.TaskPriority
+import value.TaskCount
 
 @Bean
 class TaskService {
@@ -78,19 +79,16 @@ class TaskService {
     // Delete all completed tasks
     fn deleteCompletedTasks() {
         val completed = Task.statusIdx.getAll(TaskStatus.DONE)
-        completed.forEach(t -> delete t)
+        for (t in completed) {
+            delete t
+        }
     }
 
     // Get task count by status
-    fn getTaskCount() -> map[string, int] {
+    fn getTaskCount() -> TaskCount {
         val todoCount = Task.statusIdx.getAll(TaskStatus.TODO).length
         val inProgressCount = Task.statusIdx.getAll(TaskStatus.IN_PROGRESS).length
         val doneCount = Task.statusIdx.getAll(TaskStatus.DONE).length
-        return {
-            "todo": todoCount,
-            "inProgress": inProgressCount,
-            "done": doneCount,
-            "total": todoCount + inProgressCount + doneCount
-        }
+        return TaskCount(todoCount, inProgressCount, doneCount, todoCount + inProgressCount + doneCount)
     }
 }

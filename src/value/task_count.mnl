@@ -1,0 +1,8 @@
+package value
+
+value class TaskCount(
+    val todo: int,
+    val inProgress: int,
+    val done: int,
+    val total: int
+)
