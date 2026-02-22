@@ -30,16 +30,7 @@ class TaskService {
 
     // Get pending tasks (TODO or IN_PROGRESS)
     fn getPendingTasks() -> Task[] {
-        val todoTasks = Task.statusIdx.getAll(TaskStatus.TODO)
-        val inProgressTasks = Task.statusIdx.getAll(TaskStatus.IN_PROGRESS)
-        val result: Task[] = []
-        for (t in todoTasks) {
-            result.add(t)
-        }
-        for (t in inProgressTasks) {
-            result.add(t)
-        }
-        return result
+        return Task.statusIdx.getAll(TaskStatus.TODO)
     }
 
     // Get completed tasks
