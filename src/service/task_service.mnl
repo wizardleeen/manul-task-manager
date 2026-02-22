@@ -9,13 +9,13 @@ import value.TaskCount
 class TaskService {
     // Create a new task
     fn createTask(title: string, description: string, priority: TaskPriority) -> Task {
-        require(title.length > 0, "标题不能为空")
+        require(title.size() > 0, "标题不能为空")
         return Task(title, description, TaskStatus.TODO, priority)
     }
 
     // Get all tasks
     fn getAllTasks() -> Task[] {
-        return Task.createdAtIdx.getAll(true)
+        return Task.allIdx.getAll(true)
     }
 
     // Get tasks by status
@@ -32,16 +32,7 @@ class TaskService {
     fn getPendingTasks() -> Task[] {
         val todoTasks = Task.statusIdx.getAll(TaskStatus.TODO)
         val inProgressTasks = Task.statusIdx.getAll(TaskStatus.IN_PROGRESS)
-        val all = todoTasks.concat(inProgressTasks)
-        all.sort((t1, t2) -> {
-            // Sort by priority (HIGH > MEDIUM > LOW) then by createdAt
-            val priorityOrder = [TaskPriority.LOW, TaskPriority.MEDIUM, TaskPriority.HIGH]
-            val p1 = priorityOrder.indexOf(t1.priority)
-            val p2 = priorityOrder.indexOf(t2.priority)
-            if (p1 != p2) return p1 > p2 ? -1 : 1
-            return t1.createdAt < t2.createdAt ? -1 : t1.createdAt == t2.createdAt ? 0 : 1
-        })
-        return all
+        return todoTasks.concat(inProgressTasks)
     }
 
     // Get completed tasks
@@ -86,9 +77,9 @@ class TaskService {
 
     // Get task count by status
     fn getTaskCount() -> TaskCount {
-        val todoCount = Task.statusIdx.getAll(TaskStatus.TODO).length
-        val inProgressCount = Task.statusIdx.getAll(TaskStatus.IN_PROGRESS).length
-        val doneCount = Task.statusIdx.getAll(TaskStatus.DONE).length
+        val todoCount = Task.statusIdx.getAll(TaskStatus.TODO).size()
+        val inProgressCount = Task.statusIdx.getAll(TaskStatus.IN_PROGRESS).size()
+        val doneCount = Task.statusIdx.getAll(TaskStatus.DONE).size()
         return TaskCount(todoCount, inProgressCount, doneCount, todoCount + inProgressCount + doneCount)
     }
 }

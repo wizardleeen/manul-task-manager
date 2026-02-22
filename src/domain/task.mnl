@@ -13,9 +13,9 @@ class Task(
     val createdAt = now()
     var completedAt: long? = null
 
+    static val allIdx = Index<bool, Task>(false, t -> true)
     static val statusIdx = Index<TaskStatus, Task>(false, t -> t.status)
     static val priorityIdx = Index<TaskPriority, Task>(false, t -> t.priority)
-    static val createdAtIdx = Index<long, Task>(false, t -> t.createdAt)
 
     fn markInProgress() {
         status = TaskStatus.IN_PROGRESS
